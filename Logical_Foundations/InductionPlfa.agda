@@ -45,7 +45,7 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_;_^_)
     suc m
   ∎
 
---Lemma ∀ m n ∈ ℕ : m + suc n = suc (n + m)------------------------------------
+--Lemma ∀ m n ∈ ℕ : m + suc n = suc (n + m) ------------------------------------
 +-suc : ∀ (m n : ℕ) → m + suc n ≡ suc (m + n)
 +-suc zero n =
   begin
@@ -66,6 +66,7 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_;_^_)
     suc (suc m + n)
   ∎
 
+--Proposition: ∀ m n ∈ ℕ : m + n = n + m ------------------------------------
 +-comm : ∀ (m n : ℕ) → m + n ≡ n + m
 +-comm m zero =
   begin
@@ -86,7 +87,7 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_;_^_)
     suc n + m
   ∎
 
---Usando rewrite:--------------------------------------------------------------
+--We can use rewrite in order to simplify the proofs: --------------------------
 +-assoc' : ∀ (m n p : ℕ) → (m + n) + p ≡ m + (n + p)
 +-assoc' zero n p = refl
 +-assoc' (suc m) n p  rewrite +-assoc' m n p  =  refl
@@ -103,13 +104,7 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_;_^_)
 +-comm' m zero rewrite +-identity′ m = refl
 +-comm' m (suc n) rewrite +-suc′ m n | +-comm' m n = refl
 
---Exercice: m + (n + p) ≡ n + (m + p)------------------------------------------
-{-
-+-swap : ∀ (m n p : ℕ) → m + (n + p) ≡ n + (m + p)
-+-swap zero n p = refl
-+-swap (suc m) n p rewrite +-swap m n p = {!!}
--}
-
+--Exercice: m + (n + p) ≡ n + (m + p) ------------------------------------------
 +-swap : ∀ (m n p : ℕ) → m + (n + p) ≡ n + (m + p)
 +-swap zero n p = refl
 +-swap (suc m) n p =
@@ -122,6 +117,7 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_;_^_)
   ≡⟨ cong (n +_) (+-comm' p (suc m))⟩
     refl
 
+--Using rewrite: ---------------------------------------------------------------
 +-swap' : ∀ (m n p : ℕ) → m + (n + p) ≡ n + (m + p)
 +-swap' zero n p = refl
 +-swap' (suc m) n p
@@ -130,16 +126,7 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_;_^_)
     | +-assoc' n p (suc m)
     | +-comm p (suc m) = refl
 
-{-
-  ≡⟨ cong (n +_) (+-suc′ p m) ⟩
-    n + suc (p + m)
-  ≡⟨ cong (n +_) (cong suc (+-comm' p m)) ⟩
-   n + suc (m + p)
-  ≡⟨⟩
-    {!!}
--}
-
-
+--Exercise: prove distributivity-----------------------------------------------
 *-distrib-+ : ∀ (m n p : ℕ) → (m + n) * p ≡ m * p + n * p
 *-distrib-+ zero n p = refl
 *-distrib-+ (suc m) n p =
@@ -156,6 +143,7 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_;_^_)
   ≡⟨⟩
     refl
 
+--Exercise: prove that multiplication is associative------------------------------
 *-assoc : ∀ (m n p : ℕ) → (m * n) * p ≡ m * (n * p)
 *-assoc zero n p = refl
 *-assoc (suc m) n p =
@@ -170,11 +158,14 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_;_^_)
   ≡⟨⟩
   refl
 
+--Exercise: prove that multiplication is commutative---------------------------
 
+--Lemma: ∀ n ∈ ℕ : n * 0 = 0 --------------------------------------------
 *-identity : ∀ (n : ℕ) → n * zero ≡ zero
 *-identity zero = refl
 *-identity (suc n) rewrite *-identity n = refl
 
+--Lemma: ∀ n m ∈ ℕ : m * (n + 1) = m * n + m-----------------------------------
 *-suc : ∀ (m n : ℕ) → m * suc n ≡ (m * n) + m
 *-suc zero n = refl
 *-suc (suc m) n =
@@ -186,9 +177,39 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_;_^_)
     (suc n) + ((m * n) + m)
   ≡⟨⟩
     suc (n + ((m * n) + m))
+  ≡⟨ sym (+-suc n ((m * n) + m))⟩
+    n + suc (m * n + m)
+  ≡⟨ cong (n +_) (sym (+-suc (m * n) m))⟩
+    n + (m * n + suc m)
+  ≡⟨ sym (+-assoc n (m * n) (suc m))⟩
+    n + (m * n) + suc m
   ≡⟨⟩
-    {!!}
+    (suc m) * n + suc m
+  ≡⟨⟩
+    refl
 
-*-comm : ∀ (m n p : ℕ) → m * n ≡ n * m
-*-comm zero n p rewrite *-identity n = refl
-*-comm (suc m) n p = {!!}
+
+*-comm : ∀ (m n : ℕ) → m * n ≡ n * m
+*-comm zero n  rewrite *-identity n = refl
+*-comm (suc m) n =
+  begin
+    (suc m) * n
+  ≡⟨⟩
+    n + m * n
+  ≡⟨ cong (n +_) (*-comm m n)⟩
+    n + n * m
+  ≡⟨(+-comm n (n * m))⟩
+    n * m + n
+  ≡⟨ sym (*-suc n m)⟩
+    n * suc m
+  ≡⟨⟩
+    refl
+
+*-comm' : ∀ (m n : ℕ) → m * n ≡ n * m
+*-comm' zero n rewrite *-identity n = refl
+*-comm' (suc m) n
+  rewrite
+   *-comm' m n
+   | +-comm n (n * m)
+   | *-suc n m
+   = refl
